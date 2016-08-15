@@ -1,5 +1,5 @@
 # buddhabrot
-Renders Buddhabrot fractals
+Renders Buddhabrot fractals  
 Example outputs are available at [bozebo.com/buddhabrots](http://bozebo.com/buddhabrots).
 
 This version will only build on Linux systems right now (tested on Debian Jessie), with .bmp output currently disabled.
