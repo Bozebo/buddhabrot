@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  
+  Buddhabrot rendering project by Philip Robinson
+  http://bozebo.com/buddhabrots
+  
+  ----- Usage Instructions -----
+   
+  the first <brot> element with active set to true will be used.
+  
+  do note: A large resolution or very large maxIts will, of course, use a lot of memory and require more CPU time.
+           Some graphics adaptors/drivers may not like certain resolutions as the texture is uploaded in one-to-one scale (<=512x512, 1024x1024 & 2048x2048 should be fine on almost anything).
+           This application is only single threaded :(, the potential range of options changes the program flow so much that the thread model would also have to vary depending on the chosen options and I have decided not to tackle such a vast task as of yet.
+           The application also does not report if this settings file cannot be read (insta-close on launch or silently fail on re-load)
+  
+  
+  -- controls
+  
+  space - refresh texture, hold to see animated progression (this will slow the brot render due to CPU time used for updating the texture)
+  
+  escape - close application (so be careful if you have a render going)
+  
+  q - re-load settings (this file) and start a fresh brot
+  w - start a fresh brot
+  
+  p - pause/unpause render (there is no overlay yet to show if it is paused, or other details, checking current CPU usage helps)
+  
+  e/r - decrease/increase red channel intensity
+  f/g - decrease/increase green channel intensity
+  v/b - decrease/increase blue channel intensity
+  o   - reset channels to default
+  
+  m - Save to bitmap (buddhaCPU.bmp, remember to move/rename it if you want to keep it). It can take a few seconds to save with a high resolution.
+      If paintStartMap is set to true, this will also create buddhaStartMap.bmp (this can be used to fine-tune the orbitStart region, which it encompasses, to find relevant orbit start locations to vastly speed up a render).
+      The start map will be the same resolution as the buddhabrot; use a low resolution to find nice settings and then disable the start map and raise the resolution for a high quality render run.
+      When zooming, it helps to center the viewport and orbitStart regions before scaling them
+        
+  i - hold to use the focus settings for orbitMode 1
+  
+  (not so useful)
+  9/0 - change brightness
+  [/] - change "gamma"
+  
+  
+-->
+
+
+<!-- Sample for zooming into the stalk with a ~5000x zoom (AKA 1/scale) 
+  see: http://bozebo.com/res/img/brot/5000x.png
+  
+  orbitMode 2 uses the metropolis hastings method, for more details see: http://www.steckles.com/buddha/
+  
+  paintMirror enables an optimisation that also paints the location reflected around the center of the x axis in the image
+  note that it should usually only be true when rendering a symmetrical viewport, it also only applies to orbitMode 2
+  
+  skipIsOutsideMandel can be set to skip an optimisation that quickly checks for orbits within the main bulb or larger side bulbs, this should be true if the orbitStart region does not encompass much of the complex plane where this would help, as there are diminishing returns (severely in this case) on this optimisation
+-->
+<brot
+  active="false"
+  paintStartMap="false"
+  orbitMode="2"
+  paintMirror="true"
+  xRes="1024"
+  yRes="1024"
+  minIts="32"
+  maxIts="20000"
+  
+  skipIsOutsideMandel="true">
+  
+  <red   start="0.001" end="0.01"></red>
+  <green start="0.010" end="0.10"></green>
+  <blue  start="0.100" end="1.00"></blue>
+  
+  <viewport 
+    xScale=".00018" yScale=".0002"
+    xOffset="-1.484472" yOffset="0">
+  </viewport>
+  
+  <orbitStart 
+    xScale="0.00019" yScale="0.00021" 
+    xOffset="-1.484474" yOffset="0">
+  </orbitStart>
+  
+</brot>
+
+
+<!-- Same orbit starts as above but with the default, unzoomed, viewport -->
+<brot
+  active="false"
+  orbitMode="2"
+  xRes="1024"
+  yRes="1024"
+  minIts="32"
+  maxIts="20000">
+  
+  <red   start="0.001" end="0.01"></red>
+  <green start="0.010" end="0.10"></green>
+  <blue  start="0.100" end="1.00"></blue>
+  
+  <!-- 
+    buddhaStartMap.bmp encompasses this region. Not the viewport
+  -->
+  <orbitStart 
+    xScale="0.00019" yScale="0.00021" 
+    xOffset="-1.484474" yOffset="0">
+  </orbitStart>
+  
+</brot>
+
+
+<!-- 25000x zoom into a minibrot off the center axis -->
+<brot
+  active="false"
+  orbitMode="2"
+  paintMirror="false"
+  xRes="1024"
+  yRes="1024"
+  minIts="64"
+  maxIts="2400"
+  skipIsOutsideMandel="true">
+  
+  <red   start="0.001" end="0.01"></red>
+  <green start="0.010" end="0.10"></green>
+  <blue  start="0.100" end="1.00"></blue>
+  
+  <viewport 
+    xScale=".00004" yScale=".00004"
+    xOffset="-.63239" yOffset=".684702">
+  </viewport>
+  
+  <orbitStart 
+    xScale=".000035" yScale=".000035"
+    xOffset="-.6323905" yOffset=".6847005">
+  </orbitStart>
+  
+</brot>
+
+
+<!-- Sample "genetic algorithm" with apertures orbit method
+  this also uses a different colouring method for painting orbits, based on the depth of the orbit within each colour's start/end range
+  
+  mutStr determines the size of the "box" for an aperture to perform orbits within. These boxes are visible in the start map
+  maxMutations is the initial count of orbits to perform within an aperture, apertures with deep orbits will be stuck to for longer and the opposite is true for those with shallower orbits
+ -->
+<brot
+  active="true"
+  paintStartMap="true"
+  orbitMode="1"
+  xRes="1024"
+  yRes="1024"
+  minIts="16"
+  maxIts="8000">
+  
+  <red   start="0.001" end="0.50"></red>
+  <green start="0.010" end="0.75"></green>
+  <blue  start="0.100" end="1.00"></blue>
+  
+  <GA 
+    maxMutations="2048" mutStr="0.0025" 
+    maxMutationsFocus="8192" mutStrFocus="0.0015">
+  </GA> <!-- the "GA" could do with more settings, as there are some hard coded values which make a big difference -->
+  
+</brot>
+
+
+<!-- Alternative complex planes (other than Zi Zr) can also be rendered.
+  the viewport and orbitStart regions must be fine-tuned for this to work
+  
+  xAxis: 0 = Zr, 1 = Zi, 2 = Cr
+  yAxis: 0 = Zi, 1 = Cr, 2 = Ci
+  
+  see: http://www.moleculardensity.net/buddhabrot for good information (there is a typo in the sixth image, it is Ci Zi, not Cr Zi again)
+  
+  note that both regions: the viewport and orbitStart, are rendered based on the chosen plane
+  
+
+  skipIsOutsideMandel defaults to true on non-default planes (any but Zr Zi) but can be overridden with forceSkipIsOutsideMandel.
+  doing so here decreases render time without affecting the image (notable when the resolution or maxIts are higher)
+  
+  x = Zr, y = Cr -->
+<brot
+  active="false"
+  orbitMode="0"
+  xRes="768"
+  yRes="768"
+  minIts="1"
+  maxIts="1000"
+  paintStartMap="true"
+  
+  forceSkipIsOutsideMandel="true"
+  skipIsOutsideMandel="false"
+  
+  xAxis="0"
+  yAxis="1">
+  
+  <viewport 
+    xScale="4.04" yScale="2.55"
+    xOffset="0" yOffset="-.738">
+  </viewport>
+  
+  <orbitStart 
+    xScale="2.7" yScale="2.7"
+    xOffset="-0.66" yOffset="-0.66">
+  </orbitStart>
+  
+  <red   start="0.002" end="0.50"></red>
+  <green start="0.020" end="0.75"></green>
+  <blue  start="0.200" end="1.00"></blue>
+  
+</brot>
+
+
+<!-- x = Zr, y = Ci -->
+<brot
+  active="false"
+  orbitMode="0"
+  xRes="768"
+  yRes="768"
+  minIts="8"
+  maxIts="1000"
+  paintStartMap="true"
+  
+  xAxis="0"
+  yAxis="2">
+  
+  <viewport 
+    xScale="4.04" yScale="2.375"
+    xOffset="0" yOffset="0">
+  </viewport>
+  
+  <orbitStart 
+    xScale="3.1" yScale="2.7"
+    xOffset="-.5" yOffset="0">
+  </orbitStart>
+  
+  <red   start="0.00" end="0.015"></red>
+  <green start="0.0045" end="0.11"></green>
+  <blue  start="0.005" end="1.00"></blue>
+  
+</brot>
+
+
+<!-- x = Cr, y = Ci -->
+<brot
+  active="false"
+  orbitMode="0"
+  xRes="768"
+  yRes="768"
+  minIts="0"
+  maxIts="768"
+  paintStartMap="true"
+  
+  xAxis="2"
+  yAxis="2">
+  
+  <viewport 
+    xScale="2.75" yScale="2.375"
+    xOffset="-0.65" yOffset="0">
+  </viewport>
+  
+  <orbitStart 
+    xScale="3.1" yScale="2.7"
+    xOffset="-.5" yOffset="0">
+  </orbitStart>
+  
+  <red   start="0.00" end="0.015"></red>
+  <green start="0.0045" end="0.11"></green>
+  <blue  start="0.005" end="1.00"></blue>
+  
+</brot>
+
+
+<!-- x = Zi, y = Ci -->
+<brot
+  active="false"
+  orbitMode="0"
+  xRes="768"
+  yRes="768"
+  minIts="0"
+  maxIts="1000"
+  paintStartMap="true"
+  
+  forceSkipIsOutsideMandel="true"
+  skipIsOutsideMandel="false"
+  
+  xAxis="1"
+  yAxis="2">
+  
+  <viewport 
+    xScale="4.05" yScale="2.38"
+    xOffset="0" yOffset="0">
+  </viewport>
+  
+  <orbitStart 
+    xScale="2.7" yScale="2.7"
+    xOffset="0" yOffset="0">
+  </orbitStart>
+  
+  <red   start="0.00" end="0.015"></red>
+  <green start="0.0045" end="0.11"></green>
+  <blue  start="0.005" end="1.00"></blue>
+  
+</brot>
+
+
+<!-- This is equivalent to the default values if no settings are applied -->
+<brot
+  active="false"
+  orbitMode="2"
+  xRes="768"
+  yRes="768"
+  minIts="18"
+  maxIts="10000"
+  xAxis="0"
+  yAxis="0"
+  paintMirror="false"
+  skipIsOutsideMandel="false">
+  
+  <red   start="0.002" end="0.50"></red>
+  <green start="0.020" end="0.75"></green>
+  <blue  start="0.200" end="1.00"></blue>
+  
+  <viewport 
+    xScale="2.7" yScale="2.5"
+    xOffset="-0.48" yOffset="0">
+  </viewport>
+  
+  <orbitStart 
+    xScale="2.425" yScale="2.325"
+    xOffset="-0.685" yOffset="0">
+  </orbitStart>
+  
+</brot>
