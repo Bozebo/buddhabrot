@@ -5,6 +5,14 @@
 
 using namespace std;
 
+void sleepFor(int timeInMs){	
+	#ifdef __linux
+		usleep(timeInMs * 10);
+	#elif _WIN32
+		Sleep(timeInMs);
+	#endif
+}
+
 //glfw makes it awkward to avoid globals :(
 bool viewportChanged;
 GLint windowWidth, windowHeight;
@@ -1024,11 +1032,16 @@ void Renderer::init(){
 		errCheck(92229);
 
 	if(glfwWindowShouldClose(window)){
-		printf("Error during init (press any key to close)\n");
+		printf("Error during init\n");
 		//while(!_kbhit())
 			//Sleep(50);
-	} //else
-		//FreeConsole();
+	}
+
+	#ifdef _WIN32
+	
+	else
+		FreeConsole();
+	#endif
 
 }
 /*
@@ -1532,7 +1545,7 @@ bool Renderer::run(){
 
 				brot->doSamplesMH(2048);
 
-			} else { //naive
+			} else { //naive method (fully random orbit starts)
 
 				//do orbits beginning anywhere in the z complex plane
 				brot->doSamplesNaive(512);
@@ -1543,13 +1556,11 @@ bool Renderer::run(){
 				showIn--;
 			}
 
-			//Sleep(10);
+			//sleepFor(10);
 			
 			
-			//
 		} else {
-			//Sleep(15); //wait a little to not hog CPU for no reason
-			usleep(150);
+			sleepFor(15); //wait a little to not hog CPU for no reason
 			
 			keepShowing = false;
 		}

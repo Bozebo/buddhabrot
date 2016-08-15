@@ -195,7 +195,7 @@ Settings::~Settings()
 
 using namespace tinyxml2;
 
-int Settings::loadFromFile(char* path){
+int Settings::loadFromFile(const char* path){
 
 	settingsFile = new XMLDocument ();
     

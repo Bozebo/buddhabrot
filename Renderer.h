@@ -1,11 +1,18 @@
 #ifndef HEADER_RENDERER
 #define HEADER_RENDERER
 
-//#include "Windows.h"
-#include <unistd.h>
+#ifdef __linux
+	#include <unistd.h>
+	#include <GL/glew.h>
+#elif _WIN32
+	#include <Windows.h>
+	#include "conio.h"
+	#include <GL/glew.h>
+#else
+	#error "Compiler target platform is not supported"
+#endif
 
-//#include "conio.h"
-#include <GL/glew.h>
+
 #include <GLFW/glfw3.h>
 
 #include <iostream>
@@ -20,7 +27,8 @@
 
 using namespace std;
 
-
+//platform independent thread sleep
+void sleepFor(int timeInMs);
 
 class Renderer{
 private:

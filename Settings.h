@@ -67,7 +67,7 @@ public:
 
 	void init(); //post-processes settings to clean them up
 
-	int loadFromFile(char* path);
+	int loadFromFile(const char* path);
 };
 
 #endif

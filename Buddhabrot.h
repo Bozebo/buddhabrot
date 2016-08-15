@@ -1,9 +1,6 @@
 #ifndef HEADER_BUDDHABROT
 #define HEADER_BUDDHABROT
 
-
-//#include <Windows.h>
-
 #include <iostream>
 #include <fstream>
 #include "time.h"
@@ -165,10 +162,10 @@ public:
 	void doSamplesAperture(int maxMutations);
 	void doSamplesAperture2(int maxMutations);
 	void doSamplesMH(int numOrbits);
-	void saveToFile(char* fileName);
+	void saveToFile(const char* fileName);
 	void genTexData();
-	void saveToBMP(char* fileName, float rColScale, float gColScale, float bColScale);
-	void saveStartMapToBMP(char* fileName);
+	void saveToBMP(const char* fileName, float rColScale, float gColScale, float bColScale);
+	void saveStartMapToBMP(const char* fileName);
 
 	void fillRegion(int sX, int sY, int w, int h, float val = -1);
 	void brightenRegion(int sX, int sY, int w, int h, float val = -1);

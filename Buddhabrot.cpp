@@ -95,7 +95,7 @@ void Buddhabrot::init(){
 	texData = new GLubyte[width*height * 3];
 
 	memset(debugStr, 0, sizeof(debugStr));
-	memset(texData, 0, sizeof(texData));
+	memset(texData, 0, sizeof(GLubyte) * width*height * 3);
 
 	//define the orbit history
 	delete[] orbitHistory;
@@ -224,7 +224,7 @@ void Buddhabrot::brightenRegion(int sX, int sY, int w, int h, float val){
 	}
 }
 
-void Buddhabrot::saveToFile(char* fileName){
+void Buddhabrot::saveToFile(const char* fileName){
 
 	char toSave[512];
 
@@ -238,7 +238,7 @@ void Buddhabrot::saveToFile(char* fileName){
 */
 	out.write(toSave, sprintf(toSave, " -- stats -- \n"));
 	out.write(toSave, sprintf(toSave, "noMoves: %d\n", noMoves));
-	out.write(toSave, sprintf(toSave, "Orbits:\n%d - painted, %d - checked\nsamples painted: %d\n", orbitsPainted, orbitsChecked, totalSamples));
+	out.write(toSave, sprintf(toSave, "Orbits:\n%lu - painted, %lu - checked\nsamples painted: %lu\n", orbitsPainted, orbitsChecked, totalSamples));
 	out.write(toSave, sprintf(toSave, "Visits:\nmaxRed: %f\nmaxGreen: %f\nmaxBlue: %f\n", bRed, bGreen, bBlue));
 
 
@@ -436,7 +436,7 @@ void Buddhabrot::genTexData(){
 }
 
 
-void Buddhabrot::saveStartMapToBMP(char* fileName){
+void Buddhabrot::saveStartMapToBMP(const char* fileName){
 /*
 	HANDLE file;
 	BITMAPFILEHEADER fileHeader;
@@ -504,7 +504,7 @@ void Buddhabrot::saveStartMapToBMP(char* fileName){
 */
 }
 
-void Buddhabrot::saveToBMP(char* fileName, float rColScale, float gColScale, float bColScale){
+void Buddhabrot::saveToBMP(const char* fileName, float rColScale, float gColScale, float bColScale){
 /*
 	HANDLE file;
 	BITMAPFILEHEADER fileHeader;
