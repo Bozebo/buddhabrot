@@ -1,0 +1,13 @@
+*.o
+*.obj
+*.bmp
+*.tiff
+
+buddhabrot.txt
+buddhabrot.mk
+buddhabrot.project
+buddhabrot.workspace
+
+Debug/
+.codelite/
+
